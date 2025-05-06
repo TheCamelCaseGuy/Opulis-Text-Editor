@@ -1,8 +1,9 @@
-# Opius-Text-Editor
-Opius is a minimal, open-source text editor that can run in the windows terminal. 
+# Opulis Text Editor
+Opulis is a minimal, open-source text editor that can run in the windows terminal.
 
 
-# THEMES
+
+# Themes
 ## Ocean Theme ( Default )
 ![theme](/examples/ocean.png "THEMES")
 
