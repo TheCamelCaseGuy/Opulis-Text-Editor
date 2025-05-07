@@ -43,6 +43,7 @@ class TextEditor:
         self.text = [""]
         self.cursorX, self.cursorY = 0, 0
         self.scrollOffset = 0  # Tracks the topmost visible line
+        self.horizontalOffset = 0  # Tracks the leftmost visible column
         self.undoStack = []
         self.filename = "Untitled"
         self.FLAGS = {
@@ -69,6 +70,7 @@ class TextEditor:
         self.stdscr.clear()
         max_y, max_x = self.stdscr.getmaxyx()  # Get screen size
         visible_lines = max_y - 2  # Leave space for the status bar
+        text_area_width = max_x - 6  # Width available for text
 
         for i in range(visible_lines):
             line_index = self.scrollOffset + i
@@ -77,7 +79,10 @@ class TextEditor:
             line = self.text[line_index]
             self.stdscr.addstr(i, 0, f"{line_index + 1:>3} ", curses.color_pair(1))  # Line number
             self.stdscr.addstr(i, 4, "│ ")  # Separator line
-            self.stdscr.addstr(i, 6, line[:max_x - 6])  # Actual text
+            
+            # Display portion of text based on horizontal scroll
+            visible_text = line[self.horizontalOffset:self.horizontalOffset + text_area_width]
+            self.stdscr.addstr(i, 6, visible_text)
 
         # Enhanced status bar with more info
         charCount = sum(len(line) for line in self.text)
@@ -87,110 +92,107 @@ class TextEditor:
                 data = file.read()
                 if data == "\n".join(self.text):
                     self.FLAGS["SAVED"] = True
-
                 else:
                     self.FLAGS["SAVED"] = False
 
         saveChar = "*" if not self.FLAGS["SAVED"] else ""
         statusText = f" {getTime()} | {saveChar}{filenameDisplay} | Ln {self.cursorY+1}, Col {self.cursorX+1} | Chars: {charCount} | Theme: {self.theme}  | ESC to exit"
-        trimmedStatus = statusText[:max_x - 1]  # Ensure it fits within screen width
+        trimmedStatus = statusText[:max_x - 1]
         self.stdscr.addstr(max_y - 1, 0, trimmedStatus.ljust(max_x - 1), curses.color_pair(2) | curses.A_BOLD)
 
-        # Adjust cursor position relative to the visible portion
+        # Adjust cursor position considering both vertical and horizontal scroll
         cursor_visible_y = self.cursorY - self.scrollOffset
-        self.stdscr.move(cursor_visible_y, self.cursorX + 6)
+        cursor_visible_x = self.cursorX - self.horizontalOffset + 6
+        self.stdscr.move(cursor_visible_y, cursor_visible_x)
         self.stdscr.refresh()
 
     def run(self):
         while True:
             self.displayEditor()
             key = self.stdscr.getch()
-            max_y, _ = self.stdscr.getmaxyx()
-            visible_lines = max_y - 2  # Leave space for the status bar
+            max_y, max_x = self.stdscr.getmaxyx()
+            visible_lines = max_y - 2
+            text_area_width = max_x - 6
 
             global text
             text = self.text
 
             if key == curses.KEY_UP:
-
                 if self.cursorY > 0:
                     self.cursorY -= 1
-
+                    self.cursorX = min(self.cursorX, len(self.text[self.cursorY]))
                 if self.cursorY < self.scrollOffset:
                     self.scrollOffset -= 1
 
             elif key == curses.KEY_DOWN:
-
                 if self.cursorY < len(self.text) - 1:
                     self.cursorY += 1
-
+                    self.cursorX = min(self.cursorX, len(self.text[self.cursorY]))
                 if self.cursorY >= self.scrollOffset + visible_lines:
                     self.scrollOffset += 1
 
             elif key == curses.KEY_LEFT and self.cursorX > 0:
                 self.cursorX -= 1
+                if self.cursorX < self.horizontalOffset:
+                    self.horizontalOffset = max(0, self.horizontalOffset - 1)
 
-            elif key == curses.KEY_RIGHT and self.cursorX < len(self.text[self.cursorY]):
-                self.cursorX += 1
+            elif key == curses.KEY_RIGHT:
+                if self.cursorX < len(self.text[self.cursorY]):
+                    self.cursorX += 1
+                    if self.cursorX >= self.horizontalOffset + text_area_width:
+                        self.horizontalOffset += 1
 
             elif key == ord('\n'):
                 self.undoStack.append([row[:] for row in self.text])
-                self.text.insert(self.cursorY + 1, "")
+                self.text.insert(self.cursorY + 1, self.text[self.cursorY][self.cursorX:])
+                self.text[self.cursorY] = self.text[self.cursorY][:self.cursorX]
                 self.cursorY += 1
                 self.cursorX = 0
-
+                self.horizontalOffset = 0
                 if self.cursorY >= self.scrollOffset + visible_lines:
                     self.scrollOffset += 1
 
             elif key == ord('\b') or key == 127:
-
                 if self.cursorX > 0:
                     self.undoStack.append([row[:] for row in self.text])
                     self.text[self.cursorY] = (self.text[self.cursorY][:self.cursorX - 1] +
                                                self.text[self.cursorY][self.cursorX:])
-                    
                     self.cursorX -= 1
-
+                    if self.cursorX < self.horizontalOffset:
+                        self.horizontalOffset = max(0, self.horizontalOffset - 1)
                 elif self.cursorY > 0:
-
                     self.undoStack.append([row[:] for row in self.text])
                     prev_line = self.text.pop(self.cursorY)
                     self.cursorY -= 1
                     self.cursorX = len(self.text[self.cursorY])
                     self.text[self.cursorY] += prev_line
-
                     if self.cursorY < self.scrollOffset:
                         self.scrollOffset -= 1
 
             elif key == 27:
                 break
 
-            elif key == 19:  # Ctrl+S (Save)
-
+            elif key == 19:  # Ctrl+S
                 if self.FLAGS["FILENAME"]:
                     self.saveFile(self.filename)
-
                 else:
                     filename = self.getFilename("Save as: ")
-
                     if filename:
                         self.saveFile(filename)
                         self.FLAGS["FILENAME"] = True
                         self.filename = filename
 
-            elif key == 15:  # Ctrl+O (Open)
-
+            elif key == 15:  # Ctrl+O
                 filename = self.getFilename("Open file: ")
-
                 if filename:
                     self.loadFile(filename)
                     self.FLAGS["FILENAME"] = True
                     self.filename = filename
 
-            elif key == 26 and self.undoStack:  # Ctrl+Z (Undo)
+            elif key == 26 and self.undoStack:  # Ctrl+Z
                 self.text = self.undoStack.pop()
 
-            elif key == 20:  # Ctrl+T (Switch theme)
+            elif key == 20:  # Ctrl+T
                 self.switchTheme()
                 
             elif key >= 32 and key <= 126:
@@ -198,13 +200,15 @@ class TextEditor:
                 self.text[self.cursorY] = (self.text[self.cursorY][:self.cursorX] +
                                            chr(key) + self.text[self.cursorY][self.cursorX:])
                 self.cursorX += 1
+                if self.cursorX >= self.horizontalOffset + text_area_width:
+                    self.horizontalOffset += 1
 
     def getFilename(self, prompt):
         curses.echo()
         max_y, max_x = self.stdscr.getmaxyx()
-        self.stdscr.addstr(max_y - 3, 0, prompt)  # Move prompt one line higher
+        self.stdscr.addstr(max_y - 3, 0, prompt)
         self.stdscr.refresh()
-        filename = self.stdscr.getstr(max_y - 2, 0, 50).decode("utf-8")  # User input one line above the last
+        filename = self.stdscr.getstr(max_y - 2, 0, 50).decode("utf-8")
         curses.noecho()
         return filename.strip()
 
@@ -218,6 +222,7 @@ class TextEditor:
                 self.text = file.read().split("\n")
                 self.cursorX, self.cursorY = 0, 0
                 self.scrollOffset = 0
+                self.horizontalOffset = 0
         except FileNotFoundError:
             pass
 
