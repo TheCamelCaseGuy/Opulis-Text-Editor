@@ -37,6 +37,16 @@ THEMES = {
     "nature": (curses.COLOR_GREEN, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_GREEN),
 }
 
+# copy a file to the current directory
+def copyFile(filename, newfilename):
+    currentdir = os.getcwd()
+    if not os.path.exists(os.path.join(currentdir, filename)):
+        with open(filename, "r") as file:
+            data = file.read()
+        with open(os.path.join(currentdir, newfilename), "w") as file:
+            file.write(data)
+
+
 class TextEditor:
     def __init__(self, stdscr):
         self.stdscr = stdscr
@@ -202,6 +212,25 @@ class TextEditor:
                 self.cursorX += 1
                 if self.cursorX >= self.horizontalOffset + text_area_width:
                     self.horizontalOffset += 1
+
+            elif key == 4:  # Ctrl+D
+                if self.cursorY < len(self.text):
+                    self.undoStack.append([row[:] for row in self.text])
+                    self.text.pop(self.cursorY)
+                    if not self.text:
+                        self.text = [""]
+                    if self.cursorY >= len(self.text):
+                        self.cursorY = len(self.text) - 1
+                    self.cursorX = min(self.cursorX, len(self.text[self.cursorY]))
+
+            elif key == 9:  # Tab key
+                self.undoStack.append([row[:] for row in self.text])
+                self.text[self.cursorY] = (self.text[self.cursorY][:self.cursorX] +
+                                           " " * 4 + self.text[self.cursorY][self.cursorX:])
+                self.cursorX += 4
+                if self.cursorX >= self.horizontalOffset + text_area_width:
+                    self.horizontalOffset += 1
+                
 
     def getFilename(self, prompt):
         curses.echo()
