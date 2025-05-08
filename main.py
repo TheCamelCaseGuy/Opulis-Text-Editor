@@ -20,10 +20,28 @@ text = [""]
 os.makedirs("autosave", exist_ok=True)
 path = os.path.join("autosave", "autosave.txt")
 
+
+# For Development purposes only
+
+# def debug(msg):
+#    with open("debug", "a") as file:
+#        file.write(msg)
+
 def autosave():
     while True:
-        with open(path, "w") as file:
-            file.write("\n".join(text))
+        TXT = "\n".join(text)
+        if TXT:
+            # debug("saved")
+            with open(path, "w") as file:
+                file.write(TXT)
+        
+        if len(TXT) < 3000:
+            time.sleep(3)
+            # debug("3000")
+        else:
+            time.sleep(10)
+        
+
         time.sleep(10)  # Autosave every 10 seconds
 
 threading.Thread(target=autosave, daemon=True).start()
