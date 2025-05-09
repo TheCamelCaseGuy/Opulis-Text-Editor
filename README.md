@@ -66,7 +66,7 @@ Yes, they are limited, but i plan to add a lot more in future releases
 ## Bloom Theme
 ![theme](/examples/bloom.png "THEMES")
 
-## Radient Theme
+## Radiant Theme
 ![theme](/examples/radient.png "THEMES")
 
 
