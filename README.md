@@ -6,12 +6,38 @@ Opulis is a minimal, open-source text editor that can run in the windows termina
 # The TUI System
 
 The Opulis Editor offers a TUI, this results in a lower impact on the computer's performance. it can be fully controlled by the keyboard without a mouse.
-## Status Bar
-![theme](/examples/statusbar.png "STATUSBAR")
 
+#
+# Hotkeys
 
+| Hotkey  | Action |
+| ------------- | ------------- |
+| Ctrl+S  | Save File  |
+| Ctrl+O  | Open File  |
+| Ctrl+Z  | Undo |
+| Ctrl+T  | Change Theme |
+| Ctrl+D | Delete Line |
+| Tab | Indentation ( 4 Spaces) |
 
+Yes, they are limited, but i plan to add a lot more in future releases
+
+#
+# Configuration
+| Path  | Action |
+| ------------- | ------------- |
+| theme  | Changes The Theme Of The Editor |
+| autosave.enabled  | Enables Autosave |
+| autosave.intervalLarge  | Autosave Cooldown For Large Files |
+| autosave.intervalSmall  | Autosave Cooldown For Small Files |
+| autosave.path  | Changes Autosave File Path  |
+| autosave.largeConsideration  | Number Of Characters Required In A File For It To Be Considered Large |
+| pluginsEnabled  | For Future Releases |
+
+#
+#
+#
 # Themes
+
 
 ## Ocean Theme ( Default )
 ![theme](/examples/ocean.png "THEMES")
@@ -32,21 +58,22 @@ The Opulis Editor offers a TUI, this results in a lower impact on the computer's
 ## Nature Theme
 ![theme](/examples/nature.png "THEMES")
 
+
 ## Cherry Theme
 ![theme](/examples/cherry.png "THEMES")
 
-#
-#
-#
-# Hotkeys
 
-| Hotkey  | Action |
-| ------------- | ------------- |
-| Ctrl+S  | Save File  |
-| Ctrl+O  | Open File  |
-| Ctrl+Z  | Undo |
-| Ctrl+T  | Change Theme |
-| Ctrl+D | Delete Line |
-| Tab | Indentation ( 4 Spaces) |
+## Bloom Theme
+![theme](/examples/bloom.png "THEMES")
 
-Yes, they are limited, but i plan to add a lot more in future releases
+## Radient Theme
+![theme](/examples/radient.png "THEMES")
+
+
+## Status Bar
+![theme](/examples/statusbar.png "STATUSBAR")
+
+
+
+
+

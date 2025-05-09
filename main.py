@@ -12,12 +12,13 @@ class Config:
                 "enabled": True,
                 "intervalLarge": 10,
                 "intervalSmall": 3,
-                "path": "autosave/autosave.txt",
+                "path": "autosave/",
                 "largeConsideration": 3000,
             },
             "theme": "ocean",
-            "pluginsEnabled": True
+            "pluginsEnabled": True # For future use
         }
+
         self.load()
 
     def load(self):
@@ -48,6 +49,7 @@ class Config:
             config = config[key]
         return config
 
+config = Config()
 
 
 def getTime():
@@ -60,8 +62,8 @@ def getDate():
 
 text = [""]
 
-os.makedirs("autosave", exist_ok=True)
-path = os.path.join("autosave", "autosave.txt")
+os.makedirs(config.get("autosave.path"), exist_ok=True)
+path = os.path.join(config.get("autosave.path"), "autosave.txt")
 
 
 # For Development purposes only
@@ -71,18 +73,18 @@ path = os.path.join("autosave", "autosave.txt")
 #        file.write(msg)
 
 def autosave():
-    while True:
+    while config.get("autosave.enabled"):
         TXT = "\n".join(text)
         if TXT:
             # debug("saved")
             with open(path, "w") as file:
                 file.write(TXT)
         
-        if len(TXT) < 3000:
-            time.sleep(3)
+        if len(TXT) < config.get("autosave.largeConsideration"):
+            time.sleep(config.get("autosave.intervalSmall"))
             # debug("3000")
         else:
-            time.sleep(10)
+            time.sleep(config.get("autosave.intervalLarge"))
         
 
         time.sleep(10)  # Autosave every 10 seconds
@@ -96,6 +98,9 @@ THEMES = {
     "blood": (curses.COLOR_RED, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_RED),
     "cherry": (curses.COLOR_MAGENTA, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_MAGENTA),
     "nature": (curses.COLOR_GREEN, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_GREEN),
+    "radient": (curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_BLACK, curses.COLOR_WHITE),
+    "bloom": (curses.COLOR_MAGENTA, curses.COLOR_CYAN, curses.COLOR_WHITE, curses.COLOR_GREEN),
+    
 }
 
 # copy a file to the current directory
@@ -121,7 +126,7 @@ class TextEditor:
             "FILENAME": False,
             "SAVED": True
         }
-        self.theme = "ocean"  # Default theme
+        self.theme = config.get("theme")  # Default theme
         self.initColors()
 
     def initColors(self):
@@ -133,8 +138,9 @@ class TextEditor:
 
     def switchTheme(self):
         themes = list(THEMES.keys())
-        current_index = themes.index(self.theme)
-        self.theme = themes[(current_index + 1) % len(themes)]  # Rotate to next theme
+        currentIndex = themes.index(self.theme)
+        self.theme = themes[(currentIndex + 1) % len(themes)]  # Rotate to next theme
+        config.update("theme", self.theme)  # Save the new theme to config
         self.initColors()
 
     def displayEditor(self):
@@ -267,7 +273,7 @@ class TextEditor:
 
             elif key == 20:  # Ctrl+T
                 self.switchTheme()
-                
+
             elif key >= 32 and key <= 126:
                 self.undoStack.append([row[:] for row in self.text])
                 self.text[self.cursorY] = (self.text[self.cursorY][:self.cursorX] +
