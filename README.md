@@ -73,6 +73,9 @@ Yes, they are limited, but i plan to add a lot more in future releases
 ## Status Bar
 ![theme](/examples/statusbar.png "STATUSBAR")
 
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 
 
 
