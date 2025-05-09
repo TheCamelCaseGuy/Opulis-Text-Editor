@@ -3,6 +3,52 @@ import threading
 import time
 import os
 from datetime import datetime
+import json
+
+class Config:
+    def __init__(self):
+        self.config = {
+            "autosave": {
+                "enabled": True,
+                "intervalLarge": 10,
+                "intervalSmall": 3,
+                "path": "autosave/autosave.txt",
+                "largeConsideration": 3000,
+            },
+            "theme": "ocean",
+            "pluginsEnabled": True
+        }
+        self.load()
+
+    def load(self):
+        if os.path.exists("config.json"):
+            with open("config.json", "r") as file:
+                self.config = json.load(file)
+
+    def save(self):
+        with open("config.json", "w") as file:
+            json.dump(self.config, file)
+
+    def update(self, path, value):
+        keys = path.split(".")
+        config = self.config
+        for key in keys[:-1]:
+            if key not in config:
+                config[key] = {}
+            config = config[key]
+        config[keys[-1]] = value
+        self.save()
+
+    def get(self, path):
+        keys = path.split(".")
+        config = self.config
+        for key in keys:
+            if key not in config:
+                return None
+            config = config[key]
+        return config
+
+
 
 def getTime():
     """Returns the current datetime in a nicely formatted string."""
@@ -11,9 +57,6 @@ def getTime():
 def getDate():
     """Returns the current date in a nicely formatted string."""
     return datetime.now().strftime("%Y-%m-%d")
-
-# Example usage
-print(getTime())
 
 text = [""]
 
@@ -131,7 +174,9 @@ class TextEditor:
         # Adjust cursor position considering both vertical and horizontal scroll
         cursor_visible_y = self.cursorY - self.scrollOffset
         cursor_visible_x = self.cursorX - self.horizontalOffset + 6
-        self.stdscr.move(cursor_visible_y, cursor_visible_x)
+        max_y, max_x = self.stdscr.getmaxyx()
+        if 0 <= cursor_visible_y < max_y - 1 and 0 <= cursor_visible_x < max_x:
+            self.stdscr.move(cursor_visible_y, cursor_visible_x)
         self.stdscr.refresh()
 
     def run(self):
@@ -240,6 +285,8 @@ class TextEditor:
                     if self.cursorY >= len(self.text):
                         self.cursorY = len(self.text) - 1
                     self.cursorX = min(self.cursorX, len(self.text[self.cursorY]))
+                    self.horizontalOffset = 0
+                    self.stdscr.clear()
 
             elif key == 9:  # Tab key
                 self.undoStack.append([row[:] for row in self.text])
