@@ -68,16 +68,17 @@ Yes, they are limited, but i plan to add a lot more in future releases
 ## Bloom Theme
 ![theme](/examples/bloom.png "THEMES")
 
-## Radient Theme
-![theme](/examples/radient.png "THEMES")
+
+## Radiant Theme
+![theme](/examples/radiant.png "THEMES")
+
+
+## Vanilla Theme
+![theme](/examples/vanilla.png "THEMES")
 
 
 ## Status Bar
 ![theme](/examples/statusbar.png "STATUSBAR")
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
