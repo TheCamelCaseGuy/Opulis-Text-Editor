@@ -29,6 +29,7 @@ class Config:
                 "indentWithTabs": True,
 
             },
+            "intro": False,
             "pluginsEnabled": True # For future use
         }
 
@@ -148,50 +149,50 @@ class TextEditor:
     def displayEditor(self):
         self.stdscr.clear()
         max_y, max_x = self.stdscr.getmaxyx()
-        visible_lines = max_y - 2
-        text_area_width = max_x - 6
+        visibleLines = max_y - 2
+        textAreaWidth = max_x - 6
 
-        display_y = 0
-        wrapped_line_count = 0  # Track wrapped lines before cursor
+        displayY = 0
+        wrappedLineCount = 0  # Track wrapped lines before cursor
         i = 0
-        while i < visible_lines and self.scrollOffset + i < len(self.text):
-            line_index = self.scrollOffset + i
-            line = self.text[line_index]
+        while i < visibleLines and self.scrollOffset + i < len(self.text):
+            lineIndex = self.scrollOffset + i
+            line = self.text[lineIndex]
             
             if config.get("appearance.wordwrap"):
-                display_lines = []
+                displayLines = []
                 remaining = line
-                while len(remaining) > text_area_width:
-                    wrap_point = text_area_width
-                    if ' ' in remaining[:text_area_width]:
-                        wrap_point = remaining[:text_area_width].rindex(' ')
-                    display_lines.append(remaining[:wrap_point])
-                    remaining = remaining[wrap_point:].lstrip()
-                display_lines.append(remaining)
+                while len(remaining) > textAreaWidth:
+                    wrapPoint = textAreaWidth
+                    if ' ' in remaining[:textAreaWidth]:
+                        wrapPoint = remaining[:textAreaWidth].rindex(' ')
+                    displayLines.append(remaining[:wrapPoint])
+                    remaining = remaining[wrapPoint:].lstrip()
+                displayLines.append(remaining)
                 
                 # Count wrapped lines before cursor position
-                if line_index < self.cursorY:
-                    wrapped_line_count += len(display_lines) - 1
+                if lineIndex < self.cursorY:
+                    wrappedLineCount += len(displayLines) - 1
                 
-                for j, segment in enumerate(display_lines):
-                    if display_y >= visible_lines:
+                for j, segment in enumerate(displayLines):
+                    if displayY >= visibleLines:
                         break
                     if j == 0:
-                        self.stdscr.addstr(display_y, 0, f"{line_index + 1:>3} ", curses.color_pair(1))
-                        self.stdscr.addstr(display_y, 4, (config.get("appearance.marginChar") + " "))
-                        self.stdscr.addstr(display_y, 6, segment)
+                        self.stdscr.addstr(displayY, 0, f"{lineIndex + 1:>3} ", curses.color_pair(1))
+                        self.stdscr.addstr(displayY, 4, (config.get("appearance.marginChar") + " "))
+                        self.stdscr.addstr(displayY, 6, segment)
                     else:
-                        self.stdscr.addstr(display_y, 0, "   ", curses.color_pair(1))
-                        self.stdscr.addstr(display_y, 4, (config.get("appearance.marginChar") + " "))
-                        self.stdscr.addstr(display_y, 6, segment)
-                    display_y += 1
+                        self.stdscr.addstr(displayY, 0, "   ", curses.color_pair(1))
+                        self.stdscr.addstr(displayY, 4, (config.get("appearance.marginChar") + " "))
+                        self.stdscr.addstr(displayY, 6, segment)
+                    displayY += 1
                 i += 1
             else:
-                self.stdscr.addstr(i, 0, f"{line_index + 1:>3} ", curses.color_pair(1))
+                self.stdscr.addstr(i, 0, f"{lineIndex + 1:>3} ", curses.color_pair(1))
                 self.stdscr.addstr(i, 4, (config.get("appearance.marginChar") + " "))
-                visible_text = line[self.horizontalOffset:self.horizontalOffset + text_area_width]
+                visible_text = line[self.horizontalOffset:self.horizontalOffset + textAreaWidth]
                 self.stdscr.addstr(i, 6, visible_text)
-                display_y += 1
+                displayY += 1
                 i += 1
 
         charCount = sum(len(line) for line in self.text)
@@ -211,10 +212,10 @@ class TextEditor:
         self.stdscr.addstr(max_y - 1, 0, trimmedStatus.ljust(max_x - 1), curses.color_pair(2) | curses.A_BOLD)
 
         # Adjust cursor position with wrapped lines offset
-        cursor_visible_y = self.cursorY - self.scrollOffset + wrapped_line_count
-        cursor_visible_x = self.cursorX - self.horizontalOffset + 6
-        if 0 <= cursor_visible_y < max_y - 1 and 0 <= cursor_visible_x < max_x:
-            self.stdscr.move(cursor_visible_y, cursor_visible_x)
+        cursorVisibleY = self.cursorY - self.scrollOffset + wrappedLineCount
+        cursorVisibleX = self.cursorX - self.horizontalOffset + 6
+        if 0 <= cursorVisibleY < max_y - 1 and 0 <= cursorVisibleX < max_x:
+            self.stdscr.move(cursorVisibleY, cursorVisibleX)
         self.stdscr.refresh()
 
     def run(self):
@@ -348,6 +349,19 @@ class TextEditor:
                     self.undoStack.append([row[:] for row in self.text])
                     self.text[self.cursorY] += self.text.pop(self.cursorY + 1)
 
+            elif key == 18:  # Ctrl+R
+                self.cursorX, self.cursorY = 0, 0
+                self.scrollOffset = 0
+                self.horizontalOffset = 0
+                self.text = [""]
+                self.undoStack = []
+                self.FLAGS["FILENAME"] = False
+                self.filename = "Untitled"
+                self.FLAGS["SAVED"] = True
+
+            
+            
+            
             
                 
 
@@ -378,4 +392,29 @@ def main(stdscr):
     editor = TextEditor(stdscr)
     editor.run()
 
-curses.wrapper(main)
+
+if not config.get("intro"):
+    print("Welcome to Opulis Text Editor")
+    print()
+    print("Opulis is a minimal, open-source text editor.")
+    input("Press Enter to continue...")
+    print("Hotkeys:")
+    print("Ctrl+S : Save file")
+    print("Ctrl+O : Open file")
+    print("Ctrl+Z : Undo")
+    print("Ctrl+T : Switch theme")
+    print("Ctrl+D : Delete current line")
+    print("Ctrl+W : Toggle word wrap")
+    print("Ctrl+R : Reset editor")
+    print("Tab   : Insert indentation")
+    print("Arrow keys : Navigate text")
+    print("Delete : Remove character after cursor")
+    print("Backspace : Remove character before cursor")
+    print("ESC : Exit editor")
+    print()
+    input("Press Enter to continue...")
+    config.update("intro", True)
+    curses.wrapper(main)
+
+else:
+    curses.wrapper(main)

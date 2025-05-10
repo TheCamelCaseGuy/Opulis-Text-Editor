@@ -16,7 +16,9 @@ The Opulis Editor offers a TUI, this results in a lower impact on the computer's
 | Ctrl+Z  | Undo |
 | Ctrl+T  | Change Theme |
 | Ctrl+D | Delete Line |
-| Tab | Indentation ( 4 Spaces) |
+| Ctrl+R | Reset Editor |
+| Ctrl+W | Toggle Word Wrap |
+| Tab | Indentation |
 
 Yes, they are limited, but i plan to add a lot more in future releases
 
@@ -34,6 +36,7 @@ Yes, they are limited, but i plan to add a lot more in future releases
 | autosave.largeConsideration  | Number Of Characters Required In A File For It To Be Considered Large |
 | hotkeys.tabSize  | Size Of Tab Key Indentation |
 | hotkeys.indentWithTabs  | Enable Tab Indentation |
+| intro  | Flag For Displaying Introduction |
 | pluginsEnabled  | For Future Releases |
 
 #
