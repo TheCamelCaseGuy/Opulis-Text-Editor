@@ -26,6 +26,7 @@ Yes, they are limited, but i plan to add a lot more in future releases
 | ------------- | ------------- |
 | appearance.theme  | Changes The Theme Of The Editor |
 | appearance.marginChar  | Character That Separates Numbers From Text |
+| appearance.wordwrap  | Enables Word Wrap |
 | autosave.enabled  | Enables Autosave |
 | autosave.intervalLarge  | Autosave Cooldown For Large Files |
 | autosave.intervalSmall  | Autosave Cooldown For Small Files |

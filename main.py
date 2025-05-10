@@ -20,6 +20,7 @@ class Config:
             "appearance": {
                 "theme": "ocean",
                 "marginChar": "│",
+                "wordwrap": True
 
             },
 
@@ -146,23 +147,53 @@ class TextEditor:
 
     def displayEditor(self):
         self.stdscr.clear()
-        max_y, max_x = self.stdscr.getmaxyx()  # Get screen size
-        visible_lines = max_y - 2  # Leave space for the status bar
-        text_area_width = max_x - 6  # Width available for text
+        max_y, max_x = self.stdscr.getmaxyx()
+        visible_lines = max_y - 2
+        text_area_width = max_x - 6
 
-        for i in range(visible_lines):
+        display_y = 0
+        wrapped_line_count = 0  # Track wrapped lines before cursor
+        i = 0
+        while i < visible_lines and self.scrollOffset + i < len(self.text):
             line_index = self.scrollOffset + i
-            if line_index >= len(self.text):
-                break
             line = self.text[line_index]
-            self.stdscr.addstr(i, 0, f"{line_index + 1:>3} ", curses.color_pair(1))  # Line number
-            self.stdscr.addstr(i, 4, (config.get("appearance.marginChar") + " "))  # Separator line
             
-            # Display portion of text based on horizontal scroll
-            visible_text = line[self.horizontalOffset:self.horizontalOffset + text_area_width]
-            self.stdscr.addstr(i, 6, visible_text)
+            if config.get("appearance.wordwrap"):
+                display_lines = []
+                remaining = line
+                while len(remaining) > text_area_width:
+                    wrap_point = text_area_width
+                    if ' ' in remaining[:text_area_width]:
+                        wrap_point = remaining[:text_area_width].rindex(' ')
+                    display_lines.append(remaining[:wrap_point])
+                    remaining = remaining[wrap_point:].lstrip()
+                display_lines.append(remaining)
+                
+                # Count wrapped lines before cursor position
+                if line_index < self.cursorY:
+                    wrapped_line_count += len(display_lines) - 1
+                
+                for j, segment in enumerate(display_lines):
+                    if display_y >= visible_lines:
+                        break
+                    if j == 0:
+                        self.stdscr.addstr(display_y, 0, f"{line_index + 1:>3} ", curses.color_pair(1))
+                        self.stdscr.addstr(display_y, 4, (config.get("appearance.marginChar") + " "))
+                        self.stdscr.addstr(display_y, 6, segment)
+                    else:
+                        self.stdscr.addstr(display_y, 0, "   ", curses.color_pair(1))
+                        self.stdscr.addstr(display_y, 4, (config.get("appearance.marginChar") + " "))
+                        self.stdscr.addstr(display_y, 6, segment)
+                    display_y += 1
+                i += 1
+            else:
+                self.stdscr.addstr(i, 0, f"{line_index + 1:>3} ", curses.color_pair(1))
+                self.stdscr.addstr(i, 4, (config.get("appearance.marginChar") + " "))
+                visible_text = line[self.horizontalOffset:self.horizontalOffset + text_area_width]
+                self.stdscr.addstr(i, 6, visible_text)
+                display_y += 1
+                i += 1
 
-        # Enhanced status bar with more info
         charCount = sum(len(line) for line in self.text)
         filenameDisplay = self.filename
         if self.FLAGS["FILENAME"]:
@@ -174,14 +205,14 @@ class TextEditor:
                     self.FLAGS["SAVED"] = False
 
         saveChar = "*" if not self.FLAGS["SAVED"] else ""
-        statusText = f" {getTime()} | {saveChar}{filenameDisplay} | Ln {self.cursorY+1}, Col {self.cursorX+1} | Chars: {charCount} | Theme: {self.theme}  | ESC to exit"
+        wrapStatus = "Wrap" if config.get("appearance.wordwrap") else "No Wrap"
+        statusText = f" {getTime()} | {saveChar}{filenameDisplay} | Ln {self.cursorY+1}, Col {self.cursorX+1} | {wrapStatus} | Chars: {charCount} | Theme: {self.theme} | ESC to exit"
         trimmedStatus = statusText[:max_x - 1]
         self.stdscr.addstr(max_y - 1, 0, trimmedStatus.ljust(max_x - 1), curses.color_pair(2) | curses.A_BOLD)
 
-        # Adjust cursor position considering both vertical and horizontal scroll
-        cursor_visible_y = self.cursorY - self.scrollOffset
+        # Adjust cursor position with wrapped lines offset
+        cursor_visible_y = self.cursorY - self.scrollOffset + wrapped_line_count
         cursor_visible_x = self.cursorX - self.horizontalOffset + 6
-        max_y, max_x = self.stdscr.getmaxyx()
         if 0 <= cursor_visible_y < max_y - 1 and 0 <= cursor_visible_x < max_x:
             self.stdscr.move(cursor_visible_y, cursor_visible_x)
         self.stdscr.refresh()
@@ -304,6 +335,20 @@ class TextEditor:
                     self.cursorX += 4
                     if self.cursorX >= self.horizontalOffset + text_area_width:
                         self.horizontalOffset += 1
+
+            elif key == 23:  # Ctrl+W
+                config.update("appearance.wordwrap", not config.get("appearance.wordwrap"))
+
+            elif key == curses.KEY_DC:  # Delete key
+                if self.cursorX < len(self.text[self.cursorY]):
+                    self.undoStack.append([row[:] for row in self.text])
+                    self.text[self.cursorY] = (self.text[self.cursorY][:self.cursorX] + 
+                                              self.text[self.cursorY][self.cursorX + 1:])
+                elif self.cursorY < len(self.text) - 1:
+                    self.undoStack.append([row[:] for row in self.text])
+                    self.text[self.cursorY] += self.text.pop(self.cursorY + 1)
+
+            
                 
 
     def getFilename(self, prompt):
