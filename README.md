@@ -1,7 +1,6 @@
 # Opulis Text Editor
 Opulis is a minimal, open-source text editor that can run in the windows terminal.
-#
-#
+
 #
 # The TUI System
 
@@ -25,12 +24,15 @@ Yes, they are limited, but i plan to add a lot more in future releases
 # Configuration
 | Path  | Action |
 | ------------- | ------------- |
-| theme  | Changes The Theme Of The Editor |
+| appearance.theme  | Changes The Theme Of The Editor |
+| appearance.marginChar  | Character That Separates Numbers From Text |
 | autosave.enabled  | Enables Autosave |
 | autosave.intervalLarge  | Autosave Cooldown For Large Files |
 | autosave.intervalSmall  | Autosave Cooldown For Small Files |
 | autosave.path  | Changes Autosave File Path  |
 | autosave.largeConsideration  | Number Of Characters Required In A File For It To Be Considered Large |
+| hotkeys.tabSize  | Size Of Tab Key Indentation |
+| hotkeys.indentWithTabs  | Enable Tab Indentation |
 | pluginsEnabled  | For Future Releases |
 
 #
@@ -66,14 +68,20 @@ Yes, they are limited, but i plan to add a lot more in future releases
 ## Bloom Theme
 ![theme](/examples/bloom.png "THEMES")
 
-## Radient Theme
-![theme](/examples/radient.png "THEMES")
+## Radiant Theme
+![theme](/examples/radiant.png "THEMES")
+
+
+## Vanilla Theme
+![theme](/examples/vanilla.png "THEMES")
 
 
 ## Status Bar
 ![theme](/examples/statusbar.png "STATUSBAR")
 
 
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
 

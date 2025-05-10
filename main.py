@@ -14,8 +14,20 @@ class Config:
                 "intervalSmall": 3,
                 "path": "autosave/",
                 "largeConsideration": 3000,
+
             },
-            "theme": "ocean",
+
+            "appearance": {
+                "theme": "ocean",
+                "marginChar": "│",
+
+            },
+
+            "hotkeys": {
+                "tabSize": 4,
+                "indentWithTabs": True,
+
+            },
             "pluginsEnabled": True # For future use
         }
 
@@ -28,7 +40,7 @@ class Config:
 
     def save(self):
         with open("config.json", "w") as file:
-            json.dump(self.config, file)
+            json.dump(self.config, file, indent=4)
 
     def update(self, path, value):
         keys = path.split(".")
@@ -65,29 +77,17 @@ text = [""]
 os.makedirs(config.get("autosave.path"), exist_ok=True)
 path = os.path.join(config.get("autosave.path"), "autosave.txt")
 
-
-# For Development purposes only
-
-# def debug(msg):
-#    with open("debug", "a") as file:
-#        file.write(msg)
-
 def autosave():
     while config.get("autosave.enabled"):
         TXT = "\n".join(text)
         if TXT:
-            # debug("saved")
             with open(path, "w") as file:
                 file.write(TXT)
         
         if len(TXT) < config.get("autosave.largeConsideration"):
             time.sleep(config.get("autosave.intervalSmall"))
-            # debug("3000")
         else:
             time.sleep(config.get("autosave.intervalLarge"))
-        
-
-        time.sleep(10)  # Autosave every 10 seconds
 
 threading.Thread(target=autosave, daemon=True).start()
 
@@ -98,8 +98,9 @@ THEMES = {
     "blood": (curses.COLOR_RED, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_RED),
     "cherry": (curses.COLOR_MAGENTA, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_MAGENTA),
     "nature": (curses.COLOR_GREEN, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_GREEN),
-    "radient": (curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_BLACK, curses.COLOR_WHITE),
+    "radiant": (curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_BLACK, curses.COLOR_WHITE),
     "bloom": (curses.COLOR_MAGENTA, curses.COLOR_CYAN, curses.COLOR_WHITE, curses.COLOR_GREEN),
+    "vanilla": (curses.COLOR_WHITE, curses.COLOR_BLACK, curses.COLOR_WHITE, curses.COLOR_BLACK),
     
 }
 
@@ -126,7 +127,7 @@ class TextEditor:
             "FILENAME": False,
             "SAVED": True
         }
-        self.theme = config.get("theme")  # Default theme
+        self.theme = config.get("appearance.theme")  # Default theme
         self.initColors()
 
     def initColors(self):
@@ -140,7 +141,7 @@ class TextEditor:
         themes = list(THEMES.keys())
         currentIndex = themes.index(self.theme)
         self.theme = themes[(currentIndex + 1) % len(themes)]  # Rotate to next theme
-        config.update("theme", self.theme)  # Save the new theme to config
+        config.update("appearance.theme", self.theme)  # Save the new theme to config
         self.initColors()
 
     def displayEditor(self):
@@ -155,7 +156,7 @@ class TextEditor:
                 break
             line = self.text[line_index]
             self.stdscr.addstr(i, 0, f"{line_index + 1:>3} ", curses.color_pair(1))  # Line number
-            self.stdscr.addstr(i, 4, "│ ")  # Separator line
+            self.stdscr.addstr(i, 4, (config.get("appearance.marginChar") + " "))  # Separator line
             
             # Display portion of text based on horizontal scroll
             visible_text = line[self.horizontalOffset:self.horizontalOffset + text_area_width]
@@ -267,6 +268,7 @@ class TextEditor:
                     self.loadFile(filename)
                     self.FLAGS["FILENAME"] = True
                     self.filename = filename
+                    self.undoStack = []
 
             elif key == 26 and self.undoStack:  # Ctrl+Z
                 self.text = self.undoStack.pop()
@@ -295,12 +297,13 @@ class TextEditor:
                     self.stdscr.clear()
 
             elif key == 9:  # Tab key
-                self.undoStack.append([row[:] for row in self.text])
-                self.text[self.cursorY] = (self.text[self.cursorY][:self.cursorX] +
-                                           " " * 4 + self.text[self.cursorY][self.cursorX:])
-                self.cursorX += 4
-                if self.cursorX >= self.horizontalOffset + text_area_width:
-                    self.horizontalOffset += 1
+                if config.get("hotkeys.indentWithTabs"):
+                    self.undoStack.append([row[:] for row in self.text])
+                    self.text[self.cursorY] = (self.text[self.cursorY][:self.cursorX] +
+                                            " " * config.get("hotkeys.tabSize") + self.text[self.cursorY][self.cursorX:])
+                    self.cursorX += 4
+                    if self.cursorX >= self.horizontalOffset + text_area_width:
+                        self.horizontalOffset += 1
                 
 
     def getFilename(self, prompt):
