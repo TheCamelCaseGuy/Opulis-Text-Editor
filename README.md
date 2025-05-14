@@ -15,9 +15,11 @@ The Opulis Editor offers a TUI, this results in a lower impact on the computer's
 | Ctrl+O  | Open File  |
 | Ctrl+Z  | Undo |
 | Ctrl+T  | Change Theme |
+| Ctrl+N | New Draft |
 | Ctrl+D | Delete Line |
-| Ctrl+R | Reset Editor |
+| Ctrl+R | Change Syntax Theme |
 | Ctrl+W | Toggle Word Wrap |
+| Ctrl+L | Open Settings File |
 | Tab | Indentation |
 
 Yes, they are limited, but i plan to add a lot more in future releases
@@ -29,6 +31,7 @@ Yes, they are limited, but i plan to add a lot more in future releases
 | appearance.theme  | Changes The Theme Of The Editor |
 | appearance.marginChar  | Character That Separates Numbers From Text |
 | appearance.wordwrap  | Enables Word Wrap |
+| appearance.syntaxTheme | Changes The Syntax Theme Of The Editor |
 | autosave.enabled  | Enables Autosave |
 | autosave.intervalLarge  | Autosave Cooldown For Large Files |
 | autosave.intervalSmall  | Autosave Cooldown For Small Files |
@@ -37,10 +40,37 @@ Yes, they are limited, but i plan to add a lot more in future releases
 | hotkeys.tabSize  | Size Of Tab Key Indentation |
 | hotkeys.indentWithTabs  | Enable Tab Indentation |
 | intro  | Flag For Displaying Introduction |
+| creditScreen  | Flag To Enable Startup Logo |
 | pluginsEnabled  | For Future Releases |
 
 #
-#
+# Syntax Highlighting Support
+| Sr No | Language |
+| ------------- | ------------- |
+| 1 | Python |
+| 2 | HTML |
+| 3 | JavaScript |
+| 4 | CSS |
+| 5 | Ruby |
+| 6 | JSON |
+| 7 | C++ |
+
+# Logging System
+Opulis has an extensive logging system. It is fully toggleable.
+
+## Enabling/Disabling The Logging System
+
+The Logging System can not be toggled in the config file. to enable it, create a file named `dev` in the same directory as the Opulis executable. Deleting the file automatically disables the logging system. A restart is required to toggle the logging system.
+
+The Error Log however, can not be turned off. this is useful for debugging any crashes or unexpected behaviour.
+
+### Logs are of 4 levels:
+
+#### Info: Basic startup steps, Method calls etc
+#### Debug: Config access, Logic etc
+#### Warn: Log skips, ignorable errors
+#### Error: Unexpected behaviour etc, can also be found in error file.
+
 #
 # Themes
 
@@ -81,10 +111,25 @@ Yes, they are limited, but i plan to add a lot more in future releases
 ![theme](/examples/vanilla.png "THEMES")
 
 
-## Status Bar
+# Syntax Themes
+
+## Stheno Syntax Theme
+![theme](/examples/stheno.png "S_THEMES")
+
+
+## Medusa Syntax Theme
+![theme](/examples/medusa.png "S_THEMES")
+
+
+## Euryale Syntax Theme
+![theme](/examples/euryale.png "S_THEMES")
+
+
+# Status Bar
 ![theme](/examples/statusbar.png "STATUSBAR")
 
-## License
+
+# License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
