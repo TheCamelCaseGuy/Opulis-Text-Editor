@@ -22,6 +22,8 @@ start = True
 
 if os.path.exists("dev"):
     DEVELOPMENTMODE = True # Set to False for production
+else:
+    DEVELOPMENTMODE = False
 
 def log(message: str, level: str = "info", warnInError: bool = True):
     if DEVELOPMENTMODE:
