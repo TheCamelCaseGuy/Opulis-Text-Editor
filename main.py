@@ -21,7 +21,7 @@ import shutil
 start = True
 
 if os.path.exists("dev"):
-    DEVELOPMENTMODE = False # Set to False for production
+    DEVELOPMENTMODE = True # Set to False for production
 
 def log(message: str, level: str = "info", warnInError: bool = True):
     if DEVELOPMENTMODE:
