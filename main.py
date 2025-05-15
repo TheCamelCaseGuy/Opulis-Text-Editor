@@ -14,6 +14,10 @@ from pygments.lexers.html import HtmlLexer
 from pygments.lexers.css import CssLexer
 from pygments.lexers.ruby import RubyLexer
 from pygments.lexers.json5 import Json5Lexer
+from pygments.lexers.jvm import JavaLexer
+from pygments.lexers.go import GoLexer
+from pygments.lexers.rust import RustLexer
+from colorama import Fore
 import pyfiglet
 import shutil
 
@@ -321,6 +325,12 @@ class TextEditor:
             lexer = RubyLexer()
         elif self.filename.endswith('.json'):
             lexer = Json5Lexer()
+        elif self.filename.endswith('.java'):
+            lexer = JavaLexer()
+        elif self.filename.endswith('.go'):
+            lexer = GoLexer()
+        elif self.filename.endswith('.rs'):
+            lexer = RustLexer()
         else:
             lexer = TextLexer()
 
@@ -386,7 +396,7 @@ class TextEditor:
                 self.FLAGS["SAVED"] = False
 
         saveChar = "*" if not self.FLAGS["SAVED"] else ""
-        wrapStatus = "Wrap" if config.get("appearance.wordwrap") else "No Wrap"
+        wrapStatus = "Wrap BETA" if config.get("appearance.wordwrap") else "No Wrap"
         statusText = f" {getTime()} | {saveChar}{self.filename} | Ln {self.cursorY+1}, Col {self.cursorX+1} | {wrapStatus} | Chars: {charCount} | Theme: {self.theme} | Syntax: {syntaxTheme} | ESC to exit"
         self.stdscr.addstr(max_y - 1, 0, statusText[:max_x-1].ljust(max_x-1), curses.color_pair(2) | curses.A_BOLD)
 
@@ -637,10 +647,10 @@ if config.get("creditScreen"):
     verticalPadding = "\n" * paddingLines
 
     # Print centered ASCII art
-    print(verticalPadding + centeredArt + verticalPadding)
+    print(Fore.LIGHTBLUE_EX + verticalPadding + centeredArt + verticalPadding + Fore.RESET)
 
     time.sleep(4)
-    os.system('cls')   
+    os.system('cls')
 
 try:
     if config.get("intro"):
@@ -672,6 +682,6 @@ try:
 except Exception as e:
     log(f"An error occurred: {e}", "error")
     print("An error occurred. Please check the error file for details.")
-    print("Press Enter to exit.")
+    print("Press Enter to exit")
     input()
     exit()
