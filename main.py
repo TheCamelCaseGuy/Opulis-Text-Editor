@@ -681,7 +681,24 @@ try:
         curses.wrapper(main)
 except Exception as e:
     log(f"An error occurred: {e}", "error")
-    print("An error occurred. Please check the error file for details.")
-    print("Press Enter to exit")
-    input()
+    print(f"An error occurred: {e}")
+    print("Write 'repair' to reset your installation or press enter to exit.")
+    userInput = input()
+    if userInput.lower() == "repair":
+        log("User initiated repair process.", "info")
+        os.system('start repair.exe')
+    os.system('cls')
+    asciiArt = pyfiglet.figlet_format("ERROR", font="slant")
+
+
+    # Center each line horizontally
+    centeredArt = "\n".join([line.center(terminalWidth) for line in asciiArt.split("\n")])
+
+    # Calculate vertical padding
+    paddingLines = (terminalHeight - len(centeredArt.split("\n"))) // 2
+    verticalPadding = "\n" * paddingLines
+
+    # Print centered ASCII art
+    print(Fore.LIGHTRED_EX + verticalPadding + centeredArt + verticalPadding + Fore.RESET)
+    time.sleep(3)
     exit()
