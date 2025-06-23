@@ -1,136 +1,154 @@
-# Opulis Text Editor
-Opulis is a minimal, open-source text editor that can run in the windows terminal.
+# ✨ Opulis Text Editor
 
-#
-# The TUI System
+**Opulis** is a minimal, open-source text editor built for the Windows Terminal. Lightweight, keyboard-driven, and highly customizable — it brings a TUI (Text-based User Interface) experience with modern flair.
 
-The Opulis Editor offers a TUI, this results in a lower impact on the computer's performance. it can be fully controlled by the keyboard without a mouse.
+---
 
-#
-# Hotkeys
+## 📜 Features
 
-| Hotkey  | Action |
-| ------------- | ------------- |
-| Ctrl+S  | Save File  |
-| Ctrl+O  | Open File  |
-| Ctrl+Z  | Undo |
-| Ctrl+T  | Change Theme |
-| Ctrl+N | New Draft |
-| Ctrl+D | Delete Line |
-| Ctrl+R | Change Syntax Theme |
-| Ctrl+W | Toggle Word Wrap |
-| Ctrl+L | Open Settings File |
-| Tab | Indentation |
+- ⚡ Fast, minimal TUI interface — zero mouse required  
+- 🧠 Smart hotkeys and theme control  
+- 💾 Autosave with per-size tuning  
+- 🎨 Built-in theme and syntax styling  
+- 🪵 Verbose, toggleable logging system  
+- 🔌 Future plugin support
 
-Yes, they are limited, but i plan to add a lot more in future releases
+---
 
-#
-# Configuration
-| Path  | Action |
-| ------------- | ------------- |
-| appearance.theme  | Changes The Theme Of The Editor |
-| appearance.marginChar  | Character That Separates Numbers From Text |
-| appearance.wordwrap  | Enables Word Wrap |
-| appearance.syntaxTheme | Changes The Syntax Theme Of The Editor |
-| autosave.enabled  | Enables Autosave |
-| autosave.intervalLarge  | Autosave Cooldown For Large Files |
-| autosave.intervalSmall  | Autosave Cooldown For Small Files |
-| autosave.path  | Changes Autosave File Path  |
-| autosave.largeConsideration  | Number Of Characters Required In A File For It To Be Considered Large |
-| hotkeys.tabSize  | Size Of Tab Key Indentation |
-| hotkeys.indentWithTabs  | Enable Tab Indentation |
-| intro  | Flag For Displaying Introduction |
-| creditScreen  | Flag To Enable Startup Logo |
-| pluginsEnabled  | For Future Releases |
+## 🧱 The TUI System
 
-#
-# Syntax Highlighting Support
-| Sr No | Language |
-| ------------- | ------------- |
-| 1 | Python |
-| 2 | HTML |
-| 3 | JavaScript |
-| 4 | CSS |
-| 5 | Ruby |
-| 6 | JSON |
-| 7 | C++ |
+Opulis runs entirely in the terminal, reducing system overhead and improving responsiveness. With full keyboard control, it’s ideal for power users, developers, or anyone who prefers clean, minimal workflows.
 
-# Logging System
-Opulis has an extensive logging system. It is fully toggleable.
+---
 
-## Enabling/Disabling The Logging System
+## 🚀 Quick Install
 
-The Logging System can not be toggled in the config file. to enable it, create a file named `dev` in the same directory as the Opulis executable. Deleting the file automatically disables the logging system. A restart is required to toggle the logging system.
+Paste this in PowerShell or CMD to install instantly:
 
-The Error Log however, can not be turned off. this is useful for debugging any crashes or unexpected behaviour.
+```powershell
+iwr -useb https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/installer.bat | iex
+```
 
-### Logs are of 4 levels:
+✔️ Installs `Opulis.exe`, sets up the system PATH, and creates both Desktop and Start Menu shortcuts.
 
-#### Info: Basic startup steps, Method calls etc
-#### Debug: Config access, Logic etc
-#### Warn: Log skips, ignorable errors
-#### Error: Unexpected behaviour etc, can also be found in error file.
+> 💡 After install, restart your terminal to activate the `opulis` command.
 
-#
-# Themes
+---
 
+### 🗑️ To Uninstall
 
-## Ocean Theme ( Default )
-![theme](/examples/ocean.png "THEMES")
+```powershell
+iwr -useb https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/uninstaller.bat | iex
+```
 
+Cleans up everything: binaries, shortcuts, and the PATH entry.
 
-## Dark Theme
-![theme](/examples/dark.png "THEMES")
+---
 
+## 🎹 Hotkeys
 
-## Solarized Theme
-![theme](/examples/solarized.png "THEMES")
+| Hotkey     | Action                 |
+|------------|------------------------|
+| Ctrl+S     | Save File              |
+| Ctrl+O     | Open File              |
+| Ctrl+Z     | Undo                   |
+| Ctrl+N     | New Draft              |
+| Ctrl+D     | Delete Line            |
+| Ctrl+T     | Change Theme           |
+| Ctrl+R     | Change Syntax Theme    |
+| Ctrl+W     | Toggle Word Wrap       |
+| Ctrl+L     | Open Settings File     |
+| Tab        | Indent Line            |
 
+> *More hotkeys and plugin bindings coming soon!*
 
-## Blood Theme
-![theme](/examples/blood.png "THEMES")
+---
 
+## ⚙️ Configuration Options
 
-## Nature Theme
-![theme](/examples/nature.png "THEMES")
+Customize Opulis via a JSON-based config file:
 
+| Path                          | Description                                   |
+|-------------------------------|-----------------------------------------------|
+| `appearance.theme`            | Editor color theme                            |
+| `appearance.marginChar`       | Divider between line numbers and text         |
+| `appearance.wordwrap`         | Toggle word wrap                              |
+| `appearance.syntaxTheme`      | Syntax highlighting style                     |
+| `autosave.enabled`            | Enable or disable autosave                    |
+| `autosave.intervalSmall`      | Autosave interval (small files)               |
+| `autosave.intervalLarge`      | Autosave interval (large files)               |
+| `autosave.path`               | Folder where autosave files are stored        |
+| `autosave.largeConsideration`| Char count threshold to qualify as "large"    |
+| `hotkeys.tabSize`            | Number of spaces (or tabs) per indent         |
+| `hotkeys.indentWithTabs`      | Use tab character vs spaces                   |
+| `intro`                       | Show intro screen (true/false)                |
+| `creditScreen`                | Show startup logo                             |
+| `pluginsEnabled`              | Enable plugin support (experimental)          |
 
-## Cherry Theme
-![theme](/examples/cherry.png "THEMES")
+---
 
+## 🎨 Themes
 
-## Bloom Theme
-![theme](/examples/bloom.png "THEMES")
+Opulis ships with 10 built-in themes:
 
+| Theme       | Preview                             |
+|-------------|--------------------------------------|
+| Ocean       | ![Ocean](/examples/ocean.png)        |
+| Dark        | ![Dark](/examples/dark.png)          |
+| Solarized   | ![Solarized](/examples/solarized.png)|
+| Blood       | ![Blood](/examples/blood.png)        |
+| Nature      | ![Nature](/examples/nature.png)      |
+| Cherry      | ![Cherry](/examples/cherry.png)      |
+| Bloom       | ![Bloom](/examples/bloom.png)        |
+| Radiant     | ![Radiant](/examples/radiant.png)    |
+| Vanilla     | ![Vanilla](/examples/vanilla.png)    |
 
-## Radiant Theme
-![theme](/examples/radiant.png "THEMES")
+---
 
+## 🧠 Syntax Highlighting Support
 
-## Vanilla Theme
-![theme](/examples/vanilla.png "THEMES")
+Opulis includes built-in syntax themes:
 
+| Theme      | Preview                           |
+|------------|------------------------------------|
+| Stheno     | ![Stheno](/examples/stheno.png)    |
+| Medusa     | ![Medusa](/examples/medusa.png)    |
+| Euryale    | ![Euryale](/examples/euryale.png)  |
 
-# Syntax Themes
+And supports highlighting for:
 
-## Stheno Syntax Theme
-![theme](/examples/stheno.png "S_THEMES")
+- Python
+- JavaScript
+- HTML/CSS
+- JSON
+- Ruby
+- C++
 
+---
 
-## Medusa Syntax Theme
-![theme](/examples/medusa.png "S_THEMES")
+## 🪵 Logging System
 
+The logging system has four levels:
 
-## Euryale Syntax Theme
-![theme](/examples/euryale.png "S_THEMES")
+- **Info**: Startup steps, core methods  
+- **Debug**: File I/O, config access  
+- **Warn**: Soft errors or skipped logic  
+- **Error**: Crashes and unhandled exceptions  
 
+🛠 To enable logging, create a blank file named `dev` in the same folder as `Opulis.exe`.  
+🧱 The error log is always on — for your safety.
 
-# Status Bar
-![theme](/examples/statusbar.png "STATUSBAR")
+---
 
+## 💡 Status Bar
+![Status Bar](/examples/statusbar.png)
 
-# License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Displays cursor position, mode, file name, and more.
 
+---
 
+## 📄 License
 
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
