@@ -23,10 +23,11 @@ Opulis runs entirely in the terminal, reducing system overhead and improving res
 
 ## 🚀 Quick Install
 
-Paste this in PowerShell or CMD to install instantly:
+Paste this in PowerShell to install instantly:
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/installer.bat | iex
+iwr -useb https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/installer.bat -OutFile "$env:TEMP\opulis_installer.bat"; & "$env:TEMP\opulis_installer.bat"
+ | iex
 ```
 
 ✔️ Installs `Opulis.exe`, sets up the system PATH, and creates both Desktop and Start Menu shortcuts.
@@ -38,7 +39,8 @@ iwr -useb https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/m
 ### 🗑️ To Uninstall
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/uninstaller.bat | iex
+iwr -useb https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/uninstaller.bat -OutFile "$env:TEMP\opulis_uninstaller.bat"; & "$env:TEMP\opulis_uninstaller.bat"
+
 ```
 
 Cleans up everything: binaries, shortcuts, and the PATH entry.
