@@ -85,7 +85,6 @@ Customize Opulis via a JSON-based config file:
 | `hotkeys.indentWithTabs`      | Use tab character vs spaces                   |
 | `intro`                       | Show intro screen (true/false)                |
 | `creditScreen`                | Show startup logo                             |
-| `pluginsEnabled`              | Enable plugin support (experimental)          |
 
 ---
 
