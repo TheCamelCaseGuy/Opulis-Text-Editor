@@ -38,5 +38,5 @@ if exist "%INSTALL_DIR%" (
     rmdir /s /q "%INSTALL_DIR%"
 )
 
-echo ✅ Opulis has been uninstalled. Restart your terminal to refresh PATH.
+echo Opulis has been uninstalled. Restart your terminal to refresh PATH.
 pause

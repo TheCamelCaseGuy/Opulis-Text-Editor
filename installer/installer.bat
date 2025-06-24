@@ -52,7 +52,7 @@ powershell -Command ^
   "$s.IconLocation='%TARGET_PATH%';" ^
   "$s.Save()"
 
-echo 📌 Opulis added to Start Menu.
+echo Opulis added to Start Menu.
 
-echo ✅ Opulis installed! Restart CMD or PowerShell to launch via 'Opulis'.
+echo Opulis installed! Restart CMD or PowerShell to launch via 'Opulis'.
 pause

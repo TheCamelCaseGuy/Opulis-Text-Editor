@@ -20,12 +20,42 @@ from pygments.lexers.rust import RustLexer
 from colorama import Fore
 import pyfiglet
 import shutil
+import subprocess
+import urllib.request
+
+def launchOpulisRepair():
+    # Delete config.json if it exists
+    confPath = os.path.join(os.getcwd(), "config.json")
+    if os.path.exists(confPath):
+        try:
+            os.remove(confPath)
+            print("config.json deleted successfully.")
+            
+        except Exception as e:
+            print(f"Failed to delete config.json: {e}")
+    # Define download URL and local save path
+    repairUrl = "https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/repair.bat"
+    localPath = os.path.join(os.environ.get("TEMP", "/tmp"), "repair_opulis.bat")
+    
+    try:
+        # Download the repair.bat file
+        print("Downloading repair script...")
+        urllib.request.urlretrieve(repairUrl, localPath)
+
+        # Execute the downloaded script
+        print("Executing repair script...")
+        subprocess.run([localPath], check=True, shell=True)
+        print("Repair script completed successfully.")
+    except Exception as e:
+        print(f"Reinstallation Failed: {e}")
+        
+
 
 
 start = True
 
 if os.path.exists("dev"):
-    DEVELOPMENTMODE = True # Set to False for production
+    DEVELOPMENTMODE = True
 else:
     DEVELOPMENTMODE = False
 
@@ -685,20 +715,35 @@ except Exception as e:
     print("Write 'repair' to reset your installation or press enter to exit.")
     userInput = input()
     if userInput.lower() == "repair":
-        log("User initiated repair process.", "info")
-        os.system('start repair.exe')
-    os.system('cls')
-    asciiArt = pyfiglet.figlet_format("ERROR", font="slant")
+        os.system('cls')
+        asciiArt = pyfiglet.figlet_format("Opulis Repair Tool", font="slant")
 
 
-    # Center each line horizontally
-    centeredArt = "\n".join([line.center(terminalWidth) for line in asciiArt.split("\n")])
+        # Center each line horizontally
+        centeredArt = "\n".join([line.center(terminalWidth) for line in asciiArt.split("\n")])
 
-    # Calculate vertical padding
-    paddingLines = (terminalHeight - len(centeredArt.split("\n"))) // 2
-    verticalPadding = "\n" * paddingLines
+        # Calculate vertical padding
+        paddingLines = (terminalHeight - len(centeredArt.split("\n"))) // 2
+        verticalPadding = "\n" * paddingLines
 
-    # Print centered ASCII art
-    print(Fore.LIGHTRED_EX + verticalPadding + centeredArt + verticalPadding + Fore.RESET)
-    time.sleep(3)
-    exit()
+        # Print centered ASCII art
+        print(Fore.LIGHTRED_EX + verticalPadding + centeredArt + verticalPadding + Fore.RESET)
+        time.sleep(3)
+        launchOpulisRepair()
+        exit()
+    else:
+        os.system('cls')
+        asciiArt = pyfiglet.figlet_format("ERROR", font="slant")
+
+
+        # Center each line horizontally
+        centeredArt = "\n".join([line.center(terminalWidth) for line in asciiArt.split("\n")])
+
+        # Calculate vertical padding
+        paddingLines = (terminalHeight - len(centeredArt.split("\n"))) // 2
+        verticalPadding = "\n" * paddingLines
+
+        # Print centered ASCII art
+        print(Fore.LIGHTRED_EX + verticalPadding + centeredArt + verticalPadding + Fore.RESET)
+        time.sleep(3)
+        exit()
