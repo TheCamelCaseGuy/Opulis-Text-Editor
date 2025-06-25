@@ -60,6 +60,7 @@ Cleans up everything: binaries, shortcuts, and the PATH entry.
 | Ctrl+R     | Change Syntax Theme    |
 | Ctrl+W     | Toggle Word Wrap       |
 | Ctrl+L     | Open Settings File     |
+| Ctrl+Q     | Open CWD               |
 | Tab        | Indent Line            |
 
 > *More hotkeys and plugin bindings coming soon!*
