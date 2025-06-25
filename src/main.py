@@ -23,24 +23,16 @@ import shutil
 import subprocess
 import urllib.request
 import os
-import requests
-
 
 VERSION = "2.1.0"
 
 os.system("title Opulis Text Editor")
 
 def parseVersion(latest: str, current: str):
-    LParts = latest.split('.')
-    CParts = current.split('.')
-    flag = True
-    for lver, cver in zip(LParts, CParts):
-        lver = int(lver)
-        cver = int(cver)
-        if lver < cver:
-            flag = False
-    
-    return flag
+    LParts = list(map(int, latest.split('.')))
+    CParts = list(map(int, current.split('.')))
+    return CParts >= LParts  # True if current is newer or same
+
 
 
 def openCWD():
@@ -129,6 +121,8 @@ else:
 
 if parseVersion(latestVersion, VERSION):
     log(f"Opulis Text Editor is up to date (version {VERSION}).", "info")
+    print(f"Latest {latestVersion}")
+    print(parseVersion(latestVersion, VERSION))
 else:
     log(f"A new version of Opulis Text Editor is available: {latestVersion}.", "info")
     print(Fore.LIGHTYELLOW_EX + f"A new version of Opulis Text Editor is available: {latestVersion}." + Fore.RESET)
@@ -138,7 +132,7 @@ else:
         log("User chose not to update the application.", "info")
 
 
-
+time.sleep(5)
 
 if True:
         SYNTAXTHEMES = {
