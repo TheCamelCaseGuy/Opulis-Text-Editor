@@ -22,36 +22,63 @@ import pyfiglet
 import shutil
 import subprocess
 import urllib.request
+import os
+import requests
 
-def launchOpulisRepair():
-    # Delete config.json if it exists
-    confPath = os.path.join(os.getcwd(), "config.json")
-    if os.path.exists(confPath):
-        try:
-            os.remove(confPath)
-            print("config.json deleted successfully.")
-            
-        except Exception as e:
-            print(f"Failed to delete config.json: {e}")
+
+VERSION = "2.1.0"
+
+os.system("title Opulis Text Editor")
+
+def parseVersion(latest: str, current: str):
+    LParts = latest.split('.')
+    CParts = current.split('.')
+    flag = True
+    for lver, cver in zip(LParts, CParts):
+        lver = int(lver)
+        cver = int(cver)
+        if lver < cver:
+            flag = False
+    
+    return flag
+
+
+def openCWD():
+    os.system(f'explorer "{os.getcwd()}"')
+
+def reinstallApp():
+
+
     # Define download URL and local save path
     repairUrl = "https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/repair.bat"
     localPath = os.path.join(os.environ.get("TEMP", "/tmp"), "repair_opulis.bat")
     
     try:
         # Download the repair.bat file
-        print("Downloading repair script...")
+        print("REINSTALLING APP")
         urllib.request.urlretrieve(repairUrl, localPath)
 
-        # Execute the downloaded script
-        print("Executing repair script...")
-        subprocess.run([localPath], check=True, shell=True)
-        print("Repair script completed successfully.")
+        # Write a wrapper batch file to add a 1 second delay and run as admin
+        wrapperPath = os.path.join(os.environ.get("TEMP", "/tmp"), "run_repair_opulis.bat")
+        with open(wrapperPath, "w") as wrapper:
+            wrapper.write(
+                '@echo off\n'
+                'timeout /t 1 /nobreak >nul\n'
+                'powershell -Command "Start-Process \\"{}\\" -Verb RunAs"\n'.format(localPath.replace("\\", "\\\\"))
+            )
+
+        # Execute the wrapper script in a new process (admin prompt)
+        print("Executing repair script in a new admin process...")
+        subprocess.Popen([wrapperPath], shell=True, creationflags=subprocess.CREATE_NEW_CONSOLE if hasattr(subprocess, "CREATE_NEW_CONSOLE") else 0)
+        print("Repair script launched in a new process.")
+        exit()
     except Exception as e:
         print(f"Reinstallation Failed: {e}")
+
+versionUrl = "https://raw.githubusercontent.com/TheCamelCaseGuy/Opulis-Text-Editor/main/installer/version"
+versionPath = os.path.join(os.environ.get("TEMP", "/tmp"), "opulisVersion")
+   
         
-
-
-
 start = True
 
 if os.path.exists("dev"):
@@ -88,6 +115,30 @@ def log(message: str, level: str = "info", warnInError: bool = True):
             log("Log skipped for an item.", "warn", False)
 
 log("Application startup initiated.", "info")
+try:
+    urllib.request.urlretrieve(versionUrl, versionPath)
+except:
+    log("Failed to download version file. Please check your internet connection.", "log")
+
+if os.path.exists(versionPath):
+    with open(versionPath, "r") as file:
+        latestVersion = file.read()
+
+else:
+    latestVersion = VERSION
+
+if parseVersion(latestVersion, VERSION):
+    log(f"Opulis Text Editor is up to date (version {VERSION}).", "info")
+else:
+    log(f"A new version of Opulis Text Editor is available: {latestVersion}.", "info")
+    print(Fore.LIGHTYELLOW_EX + f"A new version of Opulis Text Editor is available: {latestVersion}." + Fore.RESET)
+    if input("Do you want to update? (y/n): ").strip().lower() == 'y':
+        reinstallApp()
+    else:
+        log("User chose not to update the application.", "info")
+
+
+
 
 if True:
         SYNTAXTHEMES = {
@@ -617,6 +668,9 @@ class TextEditor:
                 self.filename = "config.json"
                 log(f"File {self.filename} opened successfully.")
 
+            elif key == 17:  # Ctrl+Q
+                openCWD()
+
 
     def getFilename(self, prompt):
         log("User input method called.", "info")
@@ -729,7 +783,16 @@ except Exception as e:
         # Print centered ASCII art
         print(Fore.LIGHTRED_EX + verticalPadding + centeredArt + verticalPadding + Fore.RESET)
         time.sleep(3)
-        launchOpulisRepair()
+            # Delete config.json if it exists
+        confPath = os.path.join(os.getcwd(), "config.json")
+        if os.path.exists(confPath):
+            try:
+                os.remove(confPath)
+                print("config.json deleted successfully.")
+
+            except Exception as e:
+                print(f"Failed to delete config.json: {e}")
+        reinstallApp()
         exit()
     else:
         os.system('cls')
