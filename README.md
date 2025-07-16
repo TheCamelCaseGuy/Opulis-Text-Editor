@@ -1,3 +1,13 @@
+> ⚠️ **Announcement:**  
+> Opulis development will pause for about a month as we migrate the editor to use [prompt_toolkit](https://github.com/prompt-toolkit/python-prompt-toolkit).  
+>  
+> This upgrade will bring better performance, extensibility, and new features. During this transition, you may not receive updates or new releases.  
+>  
+> Thank you for your patience and support!
+
+---
+
+
 # ✨ Opulis Text Editor
 
 **Opulis** is a minimal, open-source text editor built for the Windows Terminal. Lightweight, keyboard-driven, and highly customizable — it brings a TUI (Text-based User Interface) experience with modern flair.
